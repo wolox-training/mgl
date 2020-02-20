@@ -1,0 +1,2 @@
+# mgl
+Java training repository
