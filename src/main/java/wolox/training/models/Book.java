@@ -31,6 +31,20 @@ public class Book {
     @Column(nullable = false)
     private String isbn;
 
+    public Book(long id, String genre, String author, String image, String title,
+        String subtitle, String publisher, String year, Integer pages, String isbn) {
+        this.id = id;
+        this.genre = genre;
+        this.author = author;
+        this.image = image;
+        this.title = title;
+        this.subtitle = subtitle;
+        this.publisher = publisher;
+        this.year = year;
+        this.pages = pages;
+        this.isbn = isbn;
+    }
+
     public long getId() {
         return id;
     }
