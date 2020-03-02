@@ -1,7 +1,7 @@
 package wolox.training.repositories;
 
 import java.util.Optional;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.CrudRepository;
 import wolox.training.models.Book;
 
 /**
@@ -10,7 +10,7 @@ import wolox.training.models.Book;
  * @author M. G.
  */
 
-public interface BookRepository extends Repository<Book, Long> {
+public interface BookRepository extends CrudRepository<Book, Long> {
 
     /**
      * Find a book by its author.
