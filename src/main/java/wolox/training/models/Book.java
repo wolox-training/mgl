@@ -10,7 +10,7 @@ import javax.persistence.Id;
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
     @Column
     private String genre;
@@ -31,6 +31,9 @@ public class Book {
     @Column(nullable = false)
     private String isbn;
 
+    public Book() {
+    }
+
     public Book(long id, String genre, String author, String image, String title,
         String subtitle, String publisher, String year, Integer pages, String isbn) {
         this.id = id;
@@ -47,10 +50,6 @@ public class Book {
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getGenre() {
