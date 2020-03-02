@@ -18,12 +18,25 @@ import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 
+/**
+ * BookController.java Controller for Books
+ *
+ * @author M. G.
+ */
+
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
 
     @Autowired
     private BookRepository bookRepository;
+
+    /**
+     * Greet a person.
+     *
+     * @param name the name of the person
+     * @return the name of the view rendered
+     */
 
     @GetMapping("/greeting")
     public String greeting(
@@ -33,10 +46,23 @@ public class BookController {
         return "greeting";
     }
 
+    /**
+     * Find all books.
+     *
+     * @return all the books that are persisted
+     */
+
     @GetMapping
     public Iterable findAll() {
         return bookRepository.findAll();
     }
+
+    /**
+     * Find a book.
+     *
+     * @param id the id of the book
+     * @return the book found or an exception otherwise
+     */
 
     @GetMapping("/{id}")
     public Book findOne(@PathVariable Long id) {
@@ -44,11 +70,24 @@ public class BookController {
             .orElseThrow(BookNotFoundException::new);
     }
 
+    /**
+     * Create a book.
+     *
+     * @param book the book to be created
+     * @return the book persisted
+     */
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Book create(@RequestBody Book book) {
         return bookRepository.save(book);
     }
+
+    /**
+     * Delete a book.
+     *
+     * @param id the id of the book to be deleted
+     */
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
@@ -56,6 +95,14 @@ public class BookController {
             .orElseThrow(BookNotFoundException::new);
         bookRepository.deleteById(id);
     }
+
+    /**
+     * Update a book.
+     *
+     * @param book the details to be updated of the book
+     * @param id   the id of the book to be updated
+     * @return the book persisted
+     */
 
     @PutMapping("/{id}")
     public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
