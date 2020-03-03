@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import wolox.training.exceptions.BookAlreadyOwnedException;
@@ -36,10 +34,7 @@ public class User {
     @Column(nullable = false)
     private LocalDate birthDate;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "book_user",
-        joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private List<Book> books = new ArrayList<Book>();
 
     public User() {
