@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import wolox.training.models.Book;
 
 /**
- * BookRepository.java Interface that serves as a Repository for the Book model.
+ * Interface that serves as a Repository for the Book model.
  *
  * @author M. G.
  */
