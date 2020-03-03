@@ -2,9 +2,10 @@ package wolox.training.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import wolox.training.models.Book;
 
 /**
- * BookNotFoundException.java Exception when the book is not found.
+ * Exception when the {@link Book} is not found.
  *
  * @author M. G.
  */

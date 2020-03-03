@@ -19,7 +19,7 @@ import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 
 /**
- * BookController.java Controller for Books
+ * Controller for Books
  *
  * @author M. G.
  */
@@ -47,7 +47,7 @@ public class BookController {
     }
 
     /**
-     * Find all books.
+     * Find all {@link Book}s.
      *
      * @return all the books that are persisted
      */
@@ -58,7 +58,7 @@ public class BookController {
     }
 
     /**
-     * Find a book.
+     * Find a {@link Book}.
      *
      * @param id the id of the book
      * @return the book found or an exception otherwise
@@ -71,7 +71,7 @@ public class BookController {
     }
 
     /**
-     * Create a book.
+     * Create a {@link Book}.
      *
      * @param book the book to be created
      * @return the book persisted
@@ -84,7 +84,7 @@ public class BookController {
     }
 
     /**
-     * Delete a book.
+     * Delete a {@link Book}.
      *
      * @param id the id of the book to be deleted
      */
@@ -97,7 +97,7 @@ public class BookController {
     }
 
     /**
-     * Update a book.
+     * Update a {@link Book}.
      *
      * @param book the details to be updated of the book
      * @param id   the id of the book to be updated

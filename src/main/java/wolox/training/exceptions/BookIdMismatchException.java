@@ -2,9 +2,10 @@ package wolox.training.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import wolox.training.models.Book;
 
 /**
- * BookIdMismatchException.java Exception when the Id does not match the id in the book object.
+ * Exception when the Id does not match the id in the {@link Book} object.
  *
  * @author M. G.
  */
