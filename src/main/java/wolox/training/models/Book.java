@@ -1,12 +1,14 @@
 package wolox.training.models;
 
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Book {
@@ -14,23 +16,32 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
+
     @Column
     private String genre;
-    @Column(nullable = false)
+
+    @NotNull
     private String author;
-    @Column(nullable = false)
+
+    @NotNull
     private String image;
-    @Column(nullable = false)
+
+    @NotNull
     private String title;
-    @Column(nullable = false)
+
+    @NotNull
     private String subtitle;
-    @Column(nullable = false)
+
+    @NotNull
     private String publisher;
-    @Column(nullable = false)
+
+    @NotNull
     private String year;
-    @Column(nullable = false)
+
+    @NotNull
     private Integer pages;
-    @Column(nullable = false)
+
+    @NotNull
     private String isbn;
 
     @ManyToMany(mappedBy = "books")
@@ -42,15 +53,32 @@ public class Book {
     public Book(long id, String genre, String author, String image, String title,
         String subtitle, String publisher, String year, Integer pages, String isbn) {
         this.id = id;
-        this.genre = genre;
-        this.author = author;
-        this.image = image;
-        this.title = title;
-        this.subtitle = subtitle;
-        this.publisher = publisher;
-        this.year = year;
-        this.pages = pages;
-        this.isbn = isbn;
+        setGenre(genre);
+        setAuthor(author);
+        setImage(image);
+        setTitle(title);
+        setSubtitle(subtitle);
+        setPublisher(publisher);
+        setYear(year);
+        setPages(pages);
+        setIsbn(isbn);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Book book = (Book) o;
+        return isbn.equals(book.isbn);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isbn);
     }
 
     public long getId() {
