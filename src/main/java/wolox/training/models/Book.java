@@ -1,5 +1,6 @@
 package wolox.training.models;
 
+import com.google.common.base.Preconditions;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -62,6 +63,9 @@ public class Book {
     }
 
     public void setGenre(String genre) {
+        Preconditions.checkNotNull(genre);
+        Preconditions.checkArgument(!genre.isEmpty());
+
         this.genre = genre;
     }
 
@@ -70,6 +74,9 @@ public class Book {
     }
 
     public void setAuthor(String author) {
+        Preconditions.checkNotNull(author);
+        Preconditions.checkArgument(!author.isEmpty());
+
         this.author = author;
     }
 
@@ -78,6 +85,9 @@ public class Book {
     }
 
     public void setImage(String image) {
+        Preconditions.checkNotNull(image);
+        Preconditions.checkArgument(!image.isEmpty());
+
         this.image = image;
     }
 
@@ -86,6 +96,9 @@ public class Book {
     }
 
     public void setTitle(String title) {
+        Preconditions.checkNotNull(title);
+        Preconditions.checkArgument(!title.isEmpty());
+
         this.title = title;
     }
 
@@ -94,6 +107,9 @@ public class Book {
     }
 
     public void setSubtitle(String subtitle) {
+        Preconditions.checkNotNull(subtitle);
+        Preconditions.checkArgument(!subtitle.isEmpty());
+
         this.subtitle = subtitle;
     }
 
@@ -102,6 +118,9 @@ public class Book {
     }
 
     public void setPublisher(String publisher) {
+        Preconditions.checkNotNull(publisher);
+        Preconditions.checkArgument(!publisher.isEmpty());
+
         this.publisher = publisher;
     }
 
@@ -110,6 +129,9 @@ public class Book {
     }
 
     public void setYear(String year) {
+        Preconditions.checkNotNull(year);
+        Preconditions.checkArgument(!year.isEmpty());
+
         this.year = year;
     }
 
@@ -118,6 +140,9 @@ public class Book {
     }
 
     public void setPages(Integer pages) {
+        Preconditions.checkNotNull(pages);
+        Preconditions.checkArgument(pages > 0);
+
         this.pages = pages;
     }
 
@@ -126,6 +151,9 @@ public class Book {
     }
 
     public void setIsbn(String isbn) {
+        Preconditions.checkNotNull(isbn);
+        Preconditions.checkArgument(!isbn.isEmpty());
+
         this.isbn = isbn;
     }
 }
