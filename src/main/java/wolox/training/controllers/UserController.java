@@ -31,6 +31,7 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
     private BookRepository bookRepository;
 
     /**
@@ -109,7 +110,7 @@ public class UserController {
      */
 
     @PostMapping("/{user_id}/books/{book_id}")
-    public void addBookToUser(@PathVariable Long user_id, @PathVariable Long book_id) {
+    public User addBookToUser(@PathVariable Long user_id, @PathVariable Long book_id) {
         User user = userRepository.findById(user_id)
             .orElseThrow(UserNotFoundException::new);
 
@@ -117,6 +118,8 @@ public class UserController {
             .orElseThrow(BookNotFoundException::new);
 
         user.addBook(book);
+
+        return userRepository.save(user);
     }
 
     /**
@@ -127,7 +130,7 @@ public class UserController {
      */
 
     @DeleteMapping("/{user_id}/books/{book_id}")
-    public void deleteBookToUser(@PathVariable Long user_id, @PathVariable Long book_id) {
+    public User deleteBookToUser(@PathVariable Long user_id, @PathVariable Long book_id) {
         User user = userRepository.findById(user_id)
             .orElseThrow(UserNotFoundException::new);
 
@@ -135,5 +138,7 @@ public class UserController {
             .orElseThrow(BookNotFoundException::new);
 
         user.deleteBook(book);
+
+        return userRepository.save(user);
     }
 }
