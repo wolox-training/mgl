@@ -1,5 +1,9 @@
 package wolox.training.controllers;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +31,7 @@ import wolox.training.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/api/users")
+@Api
 public class UserController {
 
     @Autowired
@@ -67,6 +72,11 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "Giving attributes of a user, creates a user", response = User.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "User successfully created"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     public User create(@RequestBody User user) {
         return userRepository.save(user);
     }
