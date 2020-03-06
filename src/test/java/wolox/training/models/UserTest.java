@@ -1,10 +1,11 @@
 package wolox.training.models;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -25,10 +26,7 @@ public class UserTest {
     @Test
     public void whenFindByUsername_thenReturnUser() {
         // given
-        User user = new User();
-        user.setUsername("mary");
-        user.setName("Mary Lewis");
-        user.setBirthDate(LocalDate.now());
+        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
         entityManager.persist(user);
         entityManager.flush();
 
@@ -38,9 +36,41 @@ public class UserTest {
         // then
         assertThat(found.get().getUsername())
             .isEqualTo(user.getUsername());
-        assertThat(found.get().getName())
-            .isEqualTo(user.getName());
-        assertThat(found.get().getBirthDate())
-            .isEqualTo(user.getBirthDate());
+    }
+
+    @Test
+    public void whenInitializeUserWithoutUsername_thenThrowException() {
+        assertThrows(NullPointerException.class, () -> {
+            User user = new User(null, "Mary Lewis", LocalDate.of(1990, 1, 1));
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            User user = new User("", "Mary Lewis", LocalDate.of(1990, 1, 1));
+        });
+    }
+
+    @Test
+    public void whenInitializeUserWithoutName_thenThrowException() {
+        assertThrows(NullPointerException.class, () -> {
+            User user = new User("mary", null, LocalDate.of(1990, 1, 1));
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            User user = new User("mary", "", LocalDate.of(1990, 1, 1));
+        });
+    }
+
+    @Test
+    public void whenInitializeUserWithoutBirthDate_thenThrowException() {
+        assertThrows(NullPointerException.class, () -> {
+            User user = new User("mary", "Mary Lewis", null);
+        });
+    }
+
+    @Test
+    public void whenInitializeUserWithWrongBirthDate_thenThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            User user = new User("mary", "Mary Lewis", LocalDate.now());
+        });
     }
 }
