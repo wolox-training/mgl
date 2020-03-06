@@ -5,11 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import wolox.training.repositories.UserRepository;
 
@@ -20,27 +23,29 @@ public class UserTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    @Autowired
+    @MockBean
     private UserRepository userRepository;
+
+    @BeforeEach
+    public void setUp() {
+        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
+        Optional<User> opt = Optional.of(user);
+
+        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(opt);
+    }
 
     @Test
     public void whenFindByUsername_thenReturnUser() {
-        // given
-        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
-        entityManager.persist(user);
-        entityManager.flush();
+        String username = "mary";
+        Optional<User> found = userRepository.findByUsername(username);
 
-        // when
-        Optional<User> found = userRepository.findByUsername(user.getUsername());
-
-        // then
         assertThat(found.get().getUsername())
-            .isEqualTo(user.getUsername());
+            .isEqualTo(username);
     }
 
     @Test
     public void whenInitializeUserWithoutUsername_thenThrowException() {
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             User user = new User(null, "Mary Lewis", LocalDate.of(1990, 1, 1));
         });
 
@@ -51,7 +56,7 @@ public class UserTest {
 
     @Test
     public void whenInitializeUserWithoutName_thenThrowException() {
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             User user = new User("mary", null, LocalDate.of(1990, 1, 1));
         });
 
@@ -62,7 +67,7 @@ public class UserTest {
 
     @Test
     public void whenInitializeUserWithoutBirthDate_thenThrowException() {
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             User user = new User("mary", "Mary Lewis", null);
         });
     }
