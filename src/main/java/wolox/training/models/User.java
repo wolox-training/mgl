@@ -63,8 +63,7 @@ public class User {
     }
 
     public void setUsername(String username) {
-        Preconditions.checkNotNull(username);
-        Preconditions.checkArgument(!username.isEmpty());
+        Preconditions.checkArgument(username != null && !username.isEmpty());
 
         this.username = username;
     }
@@ -74,8 +73,7 @@ public class User {
     }
 
     public void setName(String name) {
-        Preconditions.checkNotNull(name);
-        Preconditions.checkArgument(!name.isEmpty());
+        Preconditions.checkArgument(name != null && !name.isEmpty());
 
         this.name = name;
     }
@@ -85,8 +83,7 @@ public class User {
     }
 
     public void setBirthDate(LocalDate birthDate) {
-        Preconditions.checkNotNull(birthDate);
-        Preconditions.checkArgument(birthDate.isBefore(LocalDate.now()));
+        Preconditions.checkArgument(birthDate != null && birthDate.isBefore(LocalDate.now()));
 
         this.birthDate = birthDate;
     }
