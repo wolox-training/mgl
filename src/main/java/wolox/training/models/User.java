@@ -7,14 +7,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 
 /**
@@ -31,12 +32,15 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
+
     @ApiModelProperty(notes = "The nickname that will use a user to identify itself")
-    @Column(nullable = false)
+    @NotNull
     private String username;
-    @Column(nullable = false)
+
+    @NotNull
     private String name;
-    @Column(nullable = false)
+
+    @NotNull
     private LocalDate birthDate;
 
     @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE})
@@ -48,10 +52,27 @@ public class User {
     public User(long id, String username, String name, LocalDate birthDate,
         List<Book> books) {
         this.id = id;
-        this.username = username;
-        this.name = name;
-        this.birthDate = birthDate;
-        this.books = books;
+        setUsername(username);
+        setName(name);
+        setBirthDate(birthDate);
+        setBooks(books);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return username.equals(user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
     }
 
     public long getId() {
