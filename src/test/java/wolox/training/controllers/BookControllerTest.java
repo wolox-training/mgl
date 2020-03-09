@@ -94,7 +94,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void givenAValidBook_whenCreateABook_thenReturnJson()
+    public void givenAValidBook_whenCreateABook_thenReturnOk()
         throws Exception {
 
         Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
@@ -111,7 +111,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void givenBook_whenDeleteABook_thenReturnJson()
+    public void givenBook_whenDeleteABook_thenReturnOk()
         throws Exception {
 
         Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
@@ -126,7 +126,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void givenNoBook_whenDeleteABook_thenReturnError()
+    public void givenNoBook_whenDeleteABook_thenReturnNotFound()
         throws Exception {
         mvc.perform(delete("/api/books/1")
             .contentType(MediaType.APPLICATION_JSON))
@@ -134,7 +134,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void givenAValidBook_whenEditABook_thenReturnJson()
+    public void givenAValidBook_whenEditABook_thenReturnOk()
         throws Exception {
 
         Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
@@ -155,7 +155,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void givenAValidBookAndInvalidId_whenEditABook_thenReturnError()
+    public void givenAValidBookAndInvalidId_whenEditABook_thenReturnBadRequest()
         throws Exception {
 
         Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
@@ -174,7 +174,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void givenNoBook_whenEditABook_thenReturnError()
+    public void givenNoBook_whenEditABook_thenReturnNotFound()
         throws Exception {
 
         Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
