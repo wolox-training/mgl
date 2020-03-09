@@ -10,8 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.models.Book;
 import wolox.training.models.User;
+import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
 
 @RunWith(SpringRunner.class)
@@ -37,7 +36,10 @@ public class UserControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private UserRepository repository;
+    private UserRepository userRepository;
+
+    @MockBean
+    private BookRepository bookRepository;
 
     @Test
     public void givenUsers_whenGetAllUsers_thenReturnJsonArray()
@@ -47,7 +49,7 @@ public class UserControllerTest {
 
         List<User> allUsers = Arrays.asList(user);
 
-        given(repository.findAll()).willReturn(allUsers);
+        given(userRepository.findAll()).willReturn(allUsers);
 
         mvc.perform(get("/api/users")
             .contentType(MediaType.APPLICATION_JSON))
@@ -61,7 +63,7 @@ public class UserControllerTest {
         throws Exception {
         List<User> allUsers = new ArrayList<User>();
 
-        given(repository.findAll()).willReturn(allUsers);
+        given(userRepository.findAll()).willReturn(allUsers);
 
         mvc.perform(get("/api/users")
             .contentType(MediaType.APPLICATION_JSON))
@@ -75,7 +77,7 @@ public class UserControllerTest {
 
         User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
 
-        given(repository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
         mvc.perform(get("/api/users/1")
             .contentType(MediaType.APPLICATION_JSON))
@@ -95,10 +97,7 @@ public class UserControllerTest {
     public void givenAValidUser_whenCreateAUser_thenReturnOk()
         throws Exception {
 
-        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
-
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(user);
+        String json = "{\"id\" :1, \"username\" :\"mary\", \"name\" :\"Mary Lewis\", \"birthDate\": \"1990-01-01\"}";
 
         mvc.perform(post("/api/users")
             .content(json)
@@ -113,7 +112,7 @@ public class UserControllerTest {
         User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
             new ArrayList<Book>());
 
-        given(repository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
         mvc.perform(delete("/api/users/1")
             .contentType(MediaType.APPLICATION_JSON))
@@ -135,12 +134,9 @@ public class UserControllerTest {
         User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
             new ArrayList<Book>());
 
-        given(repository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
-        user.setName("Mary L. Lewis");
-
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(user);
+        String json = "{\"id\" :1, \"username\" :\"mary\", \"name\" :\"Mary L. Lewis\", \"birthDate\": \"1990-01-01\"}";
 
         mvc.perform(put("/api/users/1")
             .content(json)
@@ -155,10 +151,9 @@ public class UserControllerTest {
         User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
             new ArrayList<Book>());
 
-        given(repository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(user);
+        String json = "{\"id\" :1, \"username\" :\"mary\", \"name\" :\"Mary L. Lewis\", \"birthDate\": \"1990-01-01\"}";
 
         mvc.perform(put("/api/users/2")
             .content(json)
@@ -173,13 +168,106 @@ public class UserControllerTest {
         User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
             new ArrayList<Book>());
 
-        given(repository.findById(1L)).willReturn(Optional.of(user));
-
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(user);
+        String json = "{\"id\" :1, \"username\" :\"mary\", \"name\" :\"Mary L. Lewis\", \"birthDate\": \"1990-01-01\"}";
 
         mvc.perform(put("/api/users/1")
             .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenAUser_whenAddingABook_thenReturnOk()
+        throws Exception {
+
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+            new ArrayList<Book>());
+
+        Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(bookRepository.findById(1L)).willReturn(Optional.of(book));
+
+        mvc.perform(post("/api/users/1/books/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void givenNoUser_whenAddingABook_thenReturnError()
+        throws Exception {
+
+        Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        given(bookRepository.findById(1L)).willReturn(Optional.of(book));
+
+        mvc.perform(post("/api/users/1/books/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenAUser_whenAddingAnInvalidBook_thenReturnError()
+        throws Exception {
+
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+            new ArrayList<Book>());
+
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        mvc.perform(post("/api/users/1/books/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenAUser_whenDeletingABook_thenReturnOk()
+        throws Exception {
+
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+            new ArrayList<Book>());
+
+        Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(bookRepository.findById(1L)).willReturn(Optional.of(book));
+
+        mvc.perform(delete("/api/users/1/books/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void givenNoUser_whenDeletingABook_thenReturnNotFound()
+        throws Exception {
+
+        Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        given(bookRepository.findById(1L)).willReturn(Optional.of(book));
+
+        mvc.perform(delete("/api/users/1/books/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenAUser_whenDeletingAnInvalidBook_thenReturnNotFound()
+        throws Exception {
+
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+            new ArrayList<Book>());
+
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        mvc.perform(delete("/api/users/1/books/1")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
     }
