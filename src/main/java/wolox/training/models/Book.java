@@ -65,6 +65,19 @@ public class Book {
         setIsbn(isbn);
     }
 
+    public Book(String genre, String author, String image, String title,
+        String subtitle, String publisher, String year, Integer pages, String isbn) {
+        setGenre(genre);
+        setAuthor(author);
+        setImage(image);
+        setTitle(title);
+        setSubtitle(subtitle);
+        setPublisher(publisher);
+        setYear(year);
+        setPages(pages);
+        setIsbn(isbn);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

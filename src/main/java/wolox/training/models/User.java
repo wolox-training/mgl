@@ -58,6 +58,12 @@ public class User {
         setBooks(books);
     }
 
+    public User(String username, String name, LocalDate birthDate) {
+        setUsername(username);
+        setName(name);
+        setBirthDate(birthDate);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
