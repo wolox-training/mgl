@@ -4,14 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import wolox.training.repositories.BookRepository;
 
@@ -22,26 +19,22 @@ public class BookTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    @MockBean
+    @Autowired
     private BookRepository bookRepository;
-
-    @BeforeEach
-    public void setUp() {
-        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
-            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
-            "1979", 180, "0-330-25864-8");
-        Optional<Book> opt = Optional.of(book);
-
-        Mockito.when(bookRepository.findByAuthor(book.getAuthor())).thenReturn(opt);
-    }
 
     @Test
     public void whenFindByAuthor_thenReturnBook() {
-        String author = "Douglas Adams";
-        Optional<Book> found = bookRepository.findByAuthor(author);
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        entityManager.persist(book);
+        entityManager.flush();
+
+        Optional<Book> found = bookRepository.findByAuthor(book.getAuthor());
 
         assertThat(found.get().getAuthor())
-            .isEqualTo(author);
+            .isEqualTo(book.getAuthor());
     }
 
     @Test

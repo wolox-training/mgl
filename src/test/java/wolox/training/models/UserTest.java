@@ -5,14 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import wolox.training.repositories.UserRepository;
 
@@ -23,24 +20,20 @@ public class UserTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    @MockBean
+    @Autowired
     private UserRepository userRepository;
-
-    @BeforeEach
-    public void setUp() {
-        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
-        Optional<User> opt = Optional.of(user);
-
-        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(opt);
-    }
 
     @Test
     public void whenFindByUsername_thenReturnUser() {
-        String username = "mary";
-        Optional<User> found = userRepository.findByUsername(username);
+        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
+
+        entityManager.persist(user);
+        entityManager.flush();
+
+        Optional<User> found = userRepository.findByUsername(user.getUsername());
 
         assertThat(found.get().getUsername())
-            .isEqualTo(username);
+            .isEqualTo(user.getUsername());
     }
 
     @Test
