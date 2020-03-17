@@ -41,9 +41,8 @@ public class UserController {
     @Autowired
     private BookRepository bookRepository;
 
-    private UserService userService() {
-        return new UserService();
-    }
+    @Autowired
+    private UserService userService;
 
     /**
      * Find all {@link User}s.
@@ -84,7 +83,7 @@ public class UserController {
         @ApiResponse(code = 500, message = "Internal server error")
     })
     public User create(@RequestBody User user) {
-        return userRepository.save(user);
+        return userService.persistUser(user);
     }
 
     /**
@@ -115,7 +114,7 @@ public class UserController {
         }
         userRepository.findById(id)
             .orElseThrow(UserNotFoundException::new);
-        return userService().createUser(user);
+        return userService.persistUser(user);
     }
 
     /**
@@ -133,7 +132,7 @@ public class UserController {
         User user = userRepository.findById(id)
             .orElseThrow(UserNotFoundException::new);
 
-        return userService().updatePassword(user, newPassword);
+        return userService.updatePassword(user, newPassword);
     }
 
     /**
