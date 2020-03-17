@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ import wolox.training.models.Book;
 import wolox.training.models.User;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
+import wolox.training.services.UserService;
 
 /**
  * Controller for {@link User}
@@ -38,6 +40,9 @@ public class UserController {
     private UserRepository userRepository;
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * Find all {@link User}s.
@@ -110,6 +115,24 @@ public class UserController {
         userRepository.findById(id)
             .orElseThrow(UserNotFoundException::new);
         return userRepository.save(user);
+    }
+
+    /**
+     * Update a {@link User}'s password.
+     *
+     * @param newPassword the new password for this user
+     * @param id          the id of the user to be updated
+     * @return the user persisted
+     */
+
+    @PutMapping("/{id}/password")
+    public User updatePassword(@RequestHeader(value = "New-Password") String newPassword,
+        @PathVariable Long id) {
+
+        User user = userRepository.findById(id)
+            .orElseThrow(UserNotFoundException::new);
+
+        return userService.updatePassword(user, newPassword);
     }
 
     /**
