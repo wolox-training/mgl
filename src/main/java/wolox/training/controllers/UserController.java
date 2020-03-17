@@ -41,8 +41,9 @@ public class UserController {
     @Autowired
     private BookRepository bookRepository;
 
-    @Autowired
-    private UserService userService;
+    private UserService userService() {
+        return new UserService();
+    }
 
     /**
      * Find all {@link User}s.
@@ -114,7 +115,7 @@ public class UserController {
         }
         userRepository.findById(id)
             .orElseThrow(UserNotFoundException::new);
-        return userRepository.save(user);
+        return userService().createUser(user);
     }
 
     /**
@@ -132,7 +133,7 @@ public class UserController {
         User user = userRepository.findById(id)
             .orElseThrow(UserNotFoundException::new);
 
-        return userService.updatePassword(user, newPassword);
+        return userService().updatePassword(user, newPassword);
     }
 
     /**
