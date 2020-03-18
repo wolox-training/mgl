@@ -83,7 +83,7 @@ public class UserController {
         @ApiResponse(code = 500, message = "Internal server error")
     })
     public User create(@RequestBody User user) {
-        return userService.persistUser(user);
+        return userRepository.save(user);
     }
 
     /**
@@ -108,13 +108,15 @@ public class UserController {
      */
 
     @PutMapping("/{id}")
-    public User updateUser(@RequestBody User user, @PathVariable Long id) {
-        if (user.getId() != id) {
+    public User updateUser(@RequestBody User modifiedUser, @PathVariable Long id) {
+        if (modifiedUser.getId() != id) {
             throw new UserIdMismatchException();
         }
-        userRepository.findById(id)
+
+        User user = userRepository.findById(id)
             .orElseThrow(UserNotFoundException::new);
-        return userService.persistUser(user);
+
+        return userService.updateUser(user, modifiedUser);
     }
 
     /**

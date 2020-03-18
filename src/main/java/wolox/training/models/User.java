@@ -19,6 +19,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import wolox.training.exceptions.BookAlreadyOwnedException;
+import wolox.training.services.PasswordEncoderService;
 
 /**
  * Model for users
@@ -118,7 +119,7 @@ public class User {
     public void setPassword(String password) {
         Preconditions.checkArgument(password != null && !password.isEmpty());
 
-        this.password = password;
+        this.password = PasswordEncoderService.encode(password);
     }
 
     public LocalDate getBirthDate() {
