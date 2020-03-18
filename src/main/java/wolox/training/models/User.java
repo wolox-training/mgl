@@ -56,19 +56,21 @@ public class User {
     public User() {
     }
 
-    public User(long id, String username, String name, LocalDate birthDate,
+    public User(long id, String username, String name, LocalDate birthDate, String password,
         List<Book> books) {
         this.id = id;
         setUsername(username);
         setName(name);
         setBirthDate(birthDate);
+        setPassword(password);
         setBooks(books);
     }
 
-    public User(String username, String name, LocalDate birthDate) {
+    public User(String username, String name, LocalDate birthDate, String password) {
         setUsername(username);
         setName(name);
         setBirthDate(birthDate);
+        setPassword(password);
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.models.Book;
@@ -45,7 +46,7 @@ public class UserControllerTest {
     public void givenUsers_whenGetAllUsers_thenReturnJsonArray()
         throws Exception {
 
-        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
+        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis");
 
         List<User> allUsers = Arrays.asList(user);
 
@@ -75,7 +76,7 @@ public class UserControllerTest {
     public void givenUser_whenGetAUser_thenReturnJson()
         throws Exception {
 
-        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
+        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis");
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
@@ -97,7 +98,7 @@ public class UserControllerTest {
     public void givenAValidUser_whenCreateAUser_thenReturnOk()
         throws Exception {
 
-        String json = "{\"id\" :1, \"username\" :\"mary\", \"name\" :\"Mary Lewis\", \"birthDate\": \"1990-01-01\"}";
+        String json = "{\"id\" :1, \"username\" :\"mary\", \"name\" :\"Mary Lewis\", \"birthDate\": \"1990-01-01\", \"password\": \"lewis\"}";
 
         mvc.perform(post("/api/users")
             .content(json)
@@ -109,7 +110,7 @@ public class UserControllerTest {
     public void givenUser_whenDeleteAUser_thenReturnOk()
         throws Exception {
 
-        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis",
             new ArrayList<Book>());
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
@@ -131,7 +132,7 @@ public class UserControllerTest {
     public void givenAValidUser_whenEditAUser_thenReturnOk()
         throws Exception {
 
-        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis",
             new ArrayList<Book>());
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
@@ -148,7 +149,7 @@ public class UserControllerTest {
     public void givenAValidUserAndInvalidId_whenEditAUser_thenReturnBadRequest()
         throws Exception {
 
-        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis",
             new ArrayList<Book>());
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
@@ -165,7 +166,7 @@ public class UserControllerTest {
     public void givenNoUser_whenEditAUser_thenReturnNotFound()
         throws Exception {
 
-        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis",
             new ArrayList<Book>());
 
         String json = "{\"id\" :1, \"username\" :\"mary\", \"name\" :\"Mary L. Lewis\", \"birthDate\": \"1990-01-01\"}";
@@ -180,7 +181,7 @@ public class UserControllerTest {
     public void givenAUser_whenAddingABook_thenReturnOk()
         throws Exception {
 
-        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis",
             new ArrayList<Book>());
 
         Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
@@ -214,7 +215,7 @@ public class UserControllerTest {
     public void givenAUser_whenAddingAnInvalidBook_thenReturnError()
         throws Exception {
 
-        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis",
             new ArrayList<Book>());
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
@@ -228,7 +229,7 @@ public class UserControllerTest {
     public void givenAUser_whenDeletingABook_thenReturnOk()
         throws Exception {
 
-        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis",
             new ArrayList<Book>());
 
         Book book = new Book(1, "Science Fiction", "Douglas Adams", "image.jpg",
@@ -262,7 +263,7 @@ public class UserControllerTest {
     public void givenAUser_whenDeletingAnInvalidBook_thenReturnNotFound()
         throws Exception {
 
-        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1),
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis",
             new ArrayList<Book>());
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
@@ -270,5 +271,14 @@ public class UserControllerTest {
         mvc.perform(delete("/api/users/1/books/1")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
+    }
+
+
+    @WithMockUser(value = "spring")
+    @Test
+    public void givenAuthRequestOnPrivateService_shouldSucceedWith200() throws Exception {
+        mvc.perform(get("/users/me")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
     }
 }

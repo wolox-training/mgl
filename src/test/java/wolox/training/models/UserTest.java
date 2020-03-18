@@ -25,7 +25,7 @@ public class UserTest {
 
     @Test
     public void whenFindByUsername_thenReturnUser() {
-        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1));
+        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis");
 
         entityManager.persist(user);
         entityManager.flush();
@@ -39,36 +39,47 @@ public class UserTest {
     @Test
     public void whenInitializeUserWithoutUsername_thenThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User(null, "Mary Lewis", LocalDate.of(1990, 1, 1));
+            User user = new User(null, "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis");
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User("", "Mary Lewis", LocalDate.of(1990, 1, 1));
+            User user = new User("", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis");
         });
     }
 
     @Test
     public void whenInitializeUserWithoutName_thenThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User("mary", null, LocalDate.of(1990, 1, 1));
+            User user = new User("mary", null, LocalDate.of(1990, 1, 1), "lewis");
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User("mary", "", LocalDate.of(1990, 1, 1));
+            User user = new User("mary", "", LocalDate.of(1990, 1, 1), "lewis");
         });
     }
 
     @Test
     public void whenInitializeUserWithoutBirthDate_thenThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User("mary", "Mary Lewis", null);
+            User user = new User("mary", "Mary Lewis", null, "lewis");
         });
     }
 
     @Test
     public void whenInitializeUserWithWrongBirthDate_thenThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User("mary", "Mary Lewis", LocalDate.now());
+            User user = new User("mary", "Mary Lewis", LocalDate.now(), "lewis");
+        });
+    }
+
+    @Test
+    public void whenInitializeUserWithoutPassword_thenThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1), null);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "");
         });
     }
 }
