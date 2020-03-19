@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,6 +44,21 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    /**
+     * Show the current logged {@link User}s information.
+     *
+     * @return the information of the logged user
+     */
+
+    @GetMapping("/me")
+    public User currentUserName(Principal principal) {
+
+        String username = principal.getName();
+
+        return userRepository.findByUsername(username)
+            .orElseThrow(UserNotFoundException::new);
+    }
 
     /**
      * Find all {@link User}s.
@@ -102,8 +118,8 @@ public class UserController {
     /**
      * Update a {@link User}.
      *
-     * @param user the details to be updated of the user
-     * @param id   the id of the user to be updated
+     * @param modifiedUser the details to be updated of the user
+     * @param id           the id of the user to be updated
      * @return the user persisted
      */
 

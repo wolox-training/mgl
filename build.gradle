@@ -37,6 +37,7 @@ dependencies {
     testCompile('com.h2database:h2')
     compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    compile group: 'org.springframework.security', name: 'spring-security-test'
 }
 
 test {
