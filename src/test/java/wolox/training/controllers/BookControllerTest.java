@@ -19,6 +19,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -29,12 +30,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
-import wolox.training.security.CustomAuthenticationProvider;
+import wolox.training.services.OpenLibraryService;
 import wolox.training.services.PasswordEncoderService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
-@ContextConfiguration(classes = CustomAuthenticationProvider.class)
+@ContextConfiguration(classes = {BookController.class})
+@AutoConfigureMockMvc(addFilters = false)
 
 public class BookControllerTest {
 
@@ -50,7 +52,10 @@ public class BookControllerTest {
     @MockBean
     private PasswordEncoderService passwordEncoderService;
 
-    @WithMockUser(value = "test1")
+    @MockBean
+    private OpenLibraryService openLibraryService;
+
+    @WithMockUser("test")
     @Test
     public void givenBooks_whenGetAllBooks_thenReturnJsonArray()
         throws Exception {
@@ -70,6 +75,7 @@ public class BookControllerTest {
             .andExpect(jsonPath("$[0].title", is("The Hitchhiker's Guide to the Galaxy")));
     }
 
+    @WithMockUser("test")
     @Test
     public void givenNoBooks_whenGetAllBooks_thenReturnEmptyJsonArray()
         throws Exception {
@@ -83,7 +89,7 @@ public class BookControllerTest {
             .andExpect(jsonPath("$", hasSize(0)));
     }
 
-    @WithMockUser(value = "spring")
+    @WithMockUser("test")
     @Test
     public void givenBook_whenGetABook_thenReturnJson()
         throws Exception {
@@ -100,6 +106,7 @@ public class BookControllerTest {
             .andExpect(jsonPath("$.title", is("The Hitchhiker's Guide to the Galaxy")));
     }
 
+    @WithMockUser("test")
     @Test
     public void givenNoBook_whenGetABook_thenReturnJsonError()
         throws Exception {
@@ -125,6 +132,7 @@ public class BookControllerTest {
             .andExpect(status().isCreated());
     }
 
+    @WithMockUser("test")
     @Test
     public void givenBook_whenDeleteABook_thenReturnOk()
         throws Exception {
@@ -140,6 +148,7 @@ public class BookControllerTest {
             .andExpect(status().isOk());
     }
 
+    @WithMockUser("test")
     @Test
     public void givenNoBook_whenDeleteABook_thenReturnNotFound()
         throws Exception {
@@ -148,6 +157,7 @@ public class BookControllerTest {
             .andExpect(status().isNotFound());
     }
 
+    @WithMockUser("test")
     @Test
     public void givenAValidBook_whenEditABook_thenReturnOk()
         throws Exception {
@@ -169,6 +179,7 @@ public class BookControllerTest {
             .andExpect(status().isOk());
     }
 
+    @WithMockUser("test")
     @Test
     public void givenAValidBookAndInvalidId_whenEditABook_thenReturnBadRequest()
         throws Exception {
@@ -188,6 +199,7 @@ public class BookControllerTest {
             .andExpect(status().isBadRequest());
     }
 
+    @WithMockUser("test")
     @Test
     public void givenNoBook_whenEditABook_thenReturnNotFound()
         throws Exception {
