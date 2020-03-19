@@ -1,5 +1,7 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.google.common.base.Preconditions;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,6 +19,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import wolox.training.exceptions.BookAlreadyOwnedException;
+import wolox.training.services.PasswordEncoderService;
 
 /**
  * Model for users
@@ -39,6 +42,10 @@ public class User {
 
     @NotNull
     private String name;
+
+    @NotNull
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private String password;
 
     @NotNull
     private LocalDate birthDate;
@@ -103,6 +110,16 @@ public class User {
         Preconditions.checkArgument(name != null && !name.isEmpty());
 
         this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        Preconditions.checkArgument(password != null && !password.isEmpty());
+
+        this.password = PasswordEncoderService.encode(password);
     }
 
     public LocalDate getBirthDate() {
