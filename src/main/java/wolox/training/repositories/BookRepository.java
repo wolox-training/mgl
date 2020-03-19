@@ -19,4 +19,12 @@ public interface BookRepository extends CrudRepository<Book, Long> {
      * @return the book if it exists, and otherwise Optional.empty() object.
      */
     Optional<Book> findByAuthor(String author);
+
+    /**
+     * Find a book by its isbn.
+     *
+     * @param isbn the isbn of the book
+     * @return the book if it exists, and otherwise Optional.empty() object.
+     */
+    Optional<Book> findByIsbn(String isbn);
 }

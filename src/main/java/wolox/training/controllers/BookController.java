@@ -2,6 +2,7 @@ package wolox.training.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import wolox.training.exceptions.BookIdMismatchException;
 import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
+import wolox.training.services.OpenLibraryService;
 
 /**
  * Controller for Books
@@ -30,6 +32,9 @@ public class BookController {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private OpenLibraryService openLibraryService;
 
     /**
      * Greet a person.
@@ -68,6 +73,19 @@ public class BookController {
     public Book findOne(@PathVariable Long id) {
         return bookRepository.findById(id)
             .orElseThrow(BookNotFoundException::new);
+    }
+
+    /**
+     * Search a {@link Book} in the database. If it does not exist, search in the OpenLibrary
+     * service and persist the book.
+     *
+     * @param isbn the ISBN of the book
+     * @return the book found or an exception otherwise
+     */
+
+    @GetMapping("/search/{isbn}")
+    public ResponseEntity<Book> search(@PathVariable String isbn) {
+        return openLibraryService.search(isbn);
     }
 
     /**
