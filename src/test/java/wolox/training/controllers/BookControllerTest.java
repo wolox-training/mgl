@@ -22,13 +22,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
+import wolox.training.repositories.UserRepository;
+import wolox.training.security.CustomAuthenticationProvider;
+import wolox.training.services.PasswordEncoderService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
+@ContextConfiguration(classes = CustomAuthenticationProvider.class)
+
 public class BookControllerTest {
 
     @Autowired
@@ -37,6 +44,13 @@ public class BookControllerTest {
     @MockBean
     private BookRepository repository;
 
+    @MockBean
+    private UserRepository userRepository;
+
+    @MockBean
+    private PasswordEncoderService passwordEncoderService;
+
+    @WithMockUser(value = "test1")
     @Test
     public void givenBooks_whenGetAllBooks_thenReturnJsonArray()
         throws Exception {
@@ -69,6 +83,7 @@ public class BookControllerTest {
             .andExpect(jsonPath("$", hasSize(0)));
     }
 
+    @WithMockUser(value = "spring")
     @Test
     public void givenBook_whenGetABook_thenReturnJson()
         throws Exception {
