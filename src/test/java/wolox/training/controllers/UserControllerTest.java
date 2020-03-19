@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -298,11 +299,25 @@ public class UserControllerTest {
             .andExpect(status().isNotFound());
     }
 
-    @WithMockUser("test")
+    @WithMockUser("mary")
     @Test
     public void givenAUser_thenReturnOk() throws Exception {
+        User user = new User(1, "mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis",
+            new ArrayList<Book>());
+
+        given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
+
+        Principal principal = new Principal() {
+            @Override
+            public String getName() {
+                return user.getUsername();
+            }
+        };
+
         mvc.perform(get("/api/users/me")
+            .principal(principal)
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username", is("mary")));
     }
 }

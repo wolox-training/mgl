@@ -46,14 +46,18 @@ public class UserController {
     private UserService userService;
 
     /**
-     * Show the current logged {@link User}s name.
+     * Show the current logged {@link User}s information.
      *
-     * @return the name of the user
+     * @return the information of the logged user
      */
 
     @GetMapping("/me")
-    public String currentUserName(Principal principal) {
-        return principal.getName();
+    public User currentUserName(Principal principal) {
+
+        String username = principal.getName();
+
+        return userRepository.findByUsername(username)
+            .orElseThrow(UserNotFoundException::new);
     }
 
     /**
