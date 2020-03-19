@@ -60,6 +60,66 @@ public class BookTest {
     }
 
     @Test
+    public void whenFindByPublisher_thenReturnBook() {
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        Book fakeBook = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
+            "1979", 180, "0-330-25864-9");
+
+        entityManager.persist(book);
+        entityManager.persist(fakeBook);
+        entityManager.flush();
+
+        List<Book> found = bookRepository
+            .findByPublisherAndGenreAndYear(book.getPublisher(), null, null);
+
+        assertThat(found).isEqualTo(Arrays.asList(book));
+    }
+
+    @Test
+    public void whenFindByGenre_thenReturnBook() {
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        Book fakeBook = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
+            "1979", 180, "0-330-25864-9");
+
+        entityManager.persist(book);
+        entityManager.persist(fakeBook);
+        entityManager.flush();
+
+        List<Book> found = bookRepository
+            .findByPublisherAndGenreAndYear(null, book.getGenre(), null);
+
+        assertThat(found).isEqualTo(Arrays.asList(book, fakeBook));
+    }
+
+    @Test
+    public void whenFindByYear_thenReturnBook() {
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        Book fakeBook = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
+            "1979", 180, "0-330-25864-9");
+
+        entityManager.persist(book);
+        entityManager.persist(fakeBook);
+        entityManager.flush();
+
+        List<Book> found = bookRepository
+            .findByPublisherAndGenreAndYear(null, null, book.getYear());
+
+        assertThat(found).isEqualTo(Arrays.asList(book, fakeBook));
+    }
+
+    @Test
     public void whenInitializeBookWithoutGenre_thenThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
             Book book = new Book(null, "Douglas Adams", "image.jpg",
