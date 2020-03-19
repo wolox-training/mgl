@@ -3,6 +3,8 @@ package wolox.training.models;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +37,26 @@ public class BookTest {
 
         assertThat(found.get().getAuthor())
             .isEqualTo(book.getAuthor());
+    }
+
+    @Test
+    public void whenFindByPublisherAndGenreAndYear_thenReturnBook() {
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        Book fakeBook = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
+            "1979", 180, "0-330-25864-9");
+
+        entityManager.persist(book);
+        entityManager.persist(fakeBook);
+        entityManager.flush();
+
+        List<Book> found = bookRepository
+            .findByPublisherAndGenreAndYear(book.getPublisher(), book.getGenre(), book.getYear());
+
+        assertThat(found).isEqualTo(Arrays.asList(book));
     }
 
     @Test

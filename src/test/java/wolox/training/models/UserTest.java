@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +36,22 @@ public class UserTest {
 
         assertThat(found.get().getUsername())
             .isEqualTo(user.getUsername());
+    }
+
+    @Test
+    public void whenFindByBirthDateBetweenAndNameIgnoreCase_thenReturnUser() {
+        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis");
+        User fakeUser = new User("mary", "Mary Lewis", LocalDate.of(1993, 1, 1), "lewis");
+
+        entityManager.persist(user);
+        entityManager.persist(fakeUser);
+        entityManager.flush();
+
+        List<User> found = userRepository
+            .findByBirthDateBetweenAndNameIgnoreCase(LocalDate.of(1980, 1, 1),
+                LocalDate.of(1991, 1, 1), "marY lewiS");
+
+        assertThat(found).isEqualTo(Arrays.asList(user));
     }
 
     @Test

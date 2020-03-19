@@ -1,5 +1,6 @@
 package wolox.training.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import wolox.training.models.Book;
@@ -27,4 +28,14 @@ public interface BookRepository extends CrudRepository<Book, Long> {
      * @return the book if it exists, and otherwise Optional.empty() object.
      */
     Optional<Book> findByIsbn(String isbn);
+
+    /**
+     * Find all books that matches a specific publisher, genre and year.
+     *
+     * @param publisher the name of the publisher
+     * @param genre     the genre of the book
+     * @param year      the year of the book
+     * @return the book if it exists, and otherwise Optional.empty() object.
+     */
+    List<Book> findByPublisherAndGenreAndYear(String publisher, String genre, String year);
 }
