@@ -63,7 +63,7 @@ public interface BookRepository extends CrudRepository<Book, Long> {
 
     @Query(
         "SELECT u FROM Book u WHERE (:id IS NULL OR u.id = :id) AND "
-            + "(:genre IS NULL OR u.genre = :genre) AND "
+            + "(:genre IS NULL OR u.genre LIKE %:genre%) AND "
             + "(:author IS NULL OR u.author = :author) AND "
             + "(:image IS NULL OR u.image = :image) AND "
             + "(:title IS NULL OR u.title = :title) AND "

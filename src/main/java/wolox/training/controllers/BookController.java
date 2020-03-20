@@ -69,7 +69,7 @@ public class BookController {
 
     @GetMapping
     public Iterable findAll(@RequestParam(required = false) Long id,
-        @RequestParam(required = false) String genre,
+        @RequestParam(defaultValue = "") String genre,
         @RequestParam(required = false) String author, @RequestParam(required = false) String image,
         @RequestParam(required = false) String title,
         @RequestParam(required = false) String subtitle,
