@@ -3,6 +3,7 @@ package wolox.training.repositories;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import wolox.training.models.User;
 
@@ -30,6 +31,10 @@ public interface UserRepository extends CrudRepository<User, Long> {
      * @param name      the name of the user (case insensitive)
      * @return the user if it exists, and otherwise Optional.empty() object.
      */
+
+    @Query("SELECT u FROM User u WHERE (:startDate IS NULL OR u.birthDate >= :startDate) AND"
+        + " (:endDate IS NULL OR u.birthDate <= :endDate) AND (:name IS NULL OR UPPER(u.name) ="
+        + " UPPER(:name))")
     List<User> findByBirthDateBetweenAndNameIgnoreCase(LocalDate startDate, LocalDate endDate,
         String name);
 }
