@@ -14,7 +14,6 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,30 +60,36 @@ public class UserControllerTest {
         throws Exception {
 
         User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis");
+        User newUser = new User("Mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis");
 
-        List<User> allUsers = Arrays.asList(user);
+        Page<User> allUsers = new PageImpl<User>(Arrays.asList(user, newUser));
 
-        given(userRepository.findAll()).willReturn(allUsers);
+        given(userRepository.findAll(PageRequest.of(0, 2))).willReturn(allUsers);
 
         mvc.perform(get("/api/users")
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("page", "0")
+            .param("size", "2"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].username", is("mary")));
+            .andExpect(jsonPath("$.content", hasSize(2)))
+            .andExpect(jsonPath("$.content[0].username", is("mary")))
+            .andExpect(jsonPath("$.content[1].username", is("Mary")));
     }
 
     @WithMockUser("test")
     @Test
     public void givenNoUsers_whenGetAllUsers_thenReturnEmptyJsonArray()
         throws Exception {
-        List<User> allUsers = new ArrayList<User>();
+        Page<User> allUsers = new PageImpl<User>(new ArrayList<User>());
 
-        given(userRepository.findAll()).willReturn(allUsers);
+        given(userRepository.findAll(PageRequest.of(0, 1))).willReturn(allUsers);
 
         mvc.perform(get("/api/users")
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("page", "0")
+            .param("size", "1"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(0)));
+            .andExpect(jsonPath("$.content", hasSize(0)));
     }
 
     @WithMockUser("test")

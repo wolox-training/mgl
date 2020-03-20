@@ -1,9 +1,10 @@
 package wolox.training.repositories;
 
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import wolox.training.models.Book;
 
@@ -13,7 +14,7 @@ import wolox.training.models.Book;
  * @author M. G.
  */
 
-public interface BookRepository extends CrudRepository<Book, Long> {
+public interface BookRepository extends PagingAndSortingRepository<Book, Long> {
 
     /**
      * Find a book by its author.
@@ -37,13 +38,14 @@ public interface BookRepository extends CrudRepository<Book, Long> {
      * @param publisher the name of the publisher
      * @param genre     the genre of the book
      * @param year      the year of the book
+     * @param pageable  the parameters about pagination and sorting of the books
      * @return the book if it exists, and otherwise Optional.empty() object.
      */
 
     @Query("SELECT u FROM Book u WHERE (:publisher IS NULL OR u.publisher = :publisher) AND"
         + " (:genre IS NULL OR u.genre = :genre) AND (:year IS NULL OR u.year = :year)")
-    List<Book> findByPublisherAndGenreAndYear(@Param("publisher") String publisher,
-        @Param("genre") String genre, @Param("year") String year);
+    Page<Book> findByPublisherAndGenreAndYear(@Param("publisher") String publisher,
+        @Param("genre") String genre, @Param("year") String year, Pageable pageable);
 
     /**
      * Find all {@link Book}s that matches a specific criteria.
@@ -58,6 +60,7 @@ public interface BookRepository extends CrudRepository<Book, Long> {
      * @param year      the year of the books
      * @param pages     the pages of the books
      * @param isbn      the isbn of the books
+     * @param pageable  the parameters about pagination and sorting of the books
      * @return a list of the books that are persisted and match the criteria
      */
 
@@ -72,9 +75,10 @@ public interface BookRepository extends CrudRepository<Book, Long> {
             + "(:year IS NULL OR u.year = :year) AND "
             + "(:pages IS NULL OR u.pages = :pages) AND"
             + " (:isbn IS NULL OR u.isbn = :isbn)")
-    List<Book> findByAllFields(@Param("id") Long id, @Param("genre") String genre,
+    Page<Book> findByAllFields(@Param("id") Long id,
+        @Param("genre") String genre,
         @Param("author") String author, @Param("image") String image,
         @Param("title") String title, @Param("subtitle") String subtitle,
         @Param("publisher") String publisher, @Param("year") String year,
-        @Param("pages") Integer pages, @Param("isbn") String isbn);
+        @Param("pages") Integer pages, @Param("isbn") String isbn, Pageable pageable);
 }

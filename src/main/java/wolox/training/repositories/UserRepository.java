@@ -1,10 +1,11 @@
 package wolox.training.repositories;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import wolox.training.models.User;
 
 /**
@@ -13,7 +14,7 @@ import wolox.training.models.User;
  * @author M. G.
  */
 
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
     /**
      * Find a {@link User} by its username.
@@ -29,12 +30,13 @@ public interface UserRepository extends CrudRepository<User, Long> {
      * @param startDate the start date where the birthDate should be included
      * @param endDate   the end date where the birthDate should be included
      * @param name      the name of the user (case insensitive)
+     * @param pageable  the parameters about pagination and sorting of the users
      * @return the user if it exists, and otherwise Optional.empty() object.
      */
 
     @Query("SELECT u FROM User u WHERE (:startDate IS NULL OR u.birthDate >= :startDate) AND"
         + " (:endDate IS NULL OR u.birthDate <= :endDate) AND (:name IS NULL OR UPPER(u.name) ="
         + " UPPER(:name))")
-    List<User> findByBirthDateBetweenAndNameIgnoreCase(LocalDate startDate, LocalDate endDate,
-        String name);
+    Page<User> findByBirthDateBetweenAndNameIgnoreCase(LocalDate startDate, LocalDate endDate,
+        String name, Pageable pageable);
 }
