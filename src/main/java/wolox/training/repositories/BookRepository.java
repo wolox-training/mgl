@@ -44,4 +44,37 @@ public interface BookRepository extends CrudRepository<Book, Long> {
         + " (:genre IS NULL OR u.genre = :genre) AND (:year IS NULL OR u.year = :year)")
     List<Book> findByPublisherAndGenreAndYear(@Param("publisher") String publisher,
         @Param("genre") String genre, @Param("year") String year);
+
+    /**
+     * Find all {@link Book}s that matches a specific criteria.
+     *
+     * @param id        the id of the books
+     * @param genre     the genre of the books
+     * @param author    the author of the books
+     * @param image     the image of the books
+     * @param title     the title of the books
+     * @param subtitle  the subtitle of the books
+     * @param publisher the publisher of the books
+     * @param year      the year of the books
+     * @param pages     the pages of the books
+     * @param isbn      the isbn of the books
+     * @return a list of the books that are persisted and match the criteria
+     */
+
+    @Query(
+        "SELECT u FROM Book u WHERE (:id IS NULL OR u.id = :id) AND "
+            + "(:genre IS NULL OR u.genre = :genre) AND "
+            + "(:author IS NULL OR u.author = :author) AND "
+            + "(:image IS NULL OR u.image = :image) AND "
+            + "(:title IS NULL OR u.title = :title) AND "
+            + "(:subtitle IS NULL OR u.subtitle = :subtitle) AND "
+            + "(:publisher IS NULL OR u.publisher = :publisher) AND "
+            + "(:year IS NULL OR u.year = :year) AND "
+            + "(:pages IS NULL OR u.pages = :pages) AND"
+            + " (:isbn IS NULL OR u.isbn = :isbn)")
+    List<Book> findByAllFields(@Param("id") Long id, @Param("genre") String genre,
+        @Param("author") String author, @Param("image") String image,
+        @Param("title") String title, @Param("subtitle") String subtitle,
+        @Param("publisher") String publisher, @Param("year") String year,
+        @Param("pages") Integer pages, @Param("isbn") String isbn);
 }

@@ -52,14 +52,34 @@ public class BookController {
     }
 
     /**
-     * Find all {@link Book}s.
+     * Find all {@link Book}s by some criteria.
      *
-     * @return all the books that are persisted
+     * @param id        the id of the books
+     * @param genre     the genre of the books
+     * @param author    the author of the books
+     * @param image     the image of the books
+     * @param title     the title of the books
+     * @param subtitle  the subtitle of the books
+     * @param publisher the publisher of the books
+     * @param year      the year of the books
+     * @param pages     the pages of the books
+     * @param isbn      the isbn of the books
+     * @return all the books that are persisted and match the criteria
      */
 
     @GetMapping
-    public Iterable findAll() {
-        return bookRepository.findAll();
+    public Iterable findAll(@RequestParam(required = false) Long id,
+        @RequestParam(required = false) String genre,
+        @RequestParam(required = false) String author, @RequestParam(required = false) String image,
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) String subtitle,
+        @RequestParam(required = false) String publisher,
+        @RequestParam(required = false) String year,
+        @RequestParam(required = false) Integer pages,
+        @RequestParam(required = false) String isbn) {
+        return bookRepository
+            .findByAllFields(id, genre, author, image, title, subtitle, publisher, year, pages,
+                isbn);
     }
 
     /**
