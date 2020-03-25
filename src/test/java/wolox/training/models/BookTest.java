@@ -120,6 +120,50 @@ public class BookTest {
     }
 
     @Test
+    public void whenFindByAllFields_thenReturnBook() {
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        Book fakeBook = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
+            "1979", 180, "0-330-25864-9");
+
+        entityManager.persist(book);
+        entityManager.persist(fakeBook);
+        entityManager.flush();
+
+        List<Book> found = bookRepository
+            .findByAllFields(book.getId(), book.getGenre(), book.getAuthor(), book.getImage(),
+                book.getTitle(), book.getSubtitle(), book.getPublisher(), book.getYear(),
+                book.getPages(), book.getIsbn());
+
+        assertThat(found).isEqualTo(Arrays.asList(book));
+    }
+
+    @Test
+    public void whenFindBySomeFields_thenReturnBook() {
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        Book fakeBook = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
+            "1979", 180, "0-330-25864-9");
+
+        entityManager.persist(book);
+        entityManager.persist(fakeBook);
+        entityManager.flush();
+
+        List<Book> found = bookRepository
+            .findByAllFields(null, book.getGenre(), book.getAuthor(), book.getImage(),
+                book.getTitle(), book.getSubtitle(), null, book.getYear(),
+                book.getPages(), null);
+
+        assertThat(found).isEqualTo(Arrays.asList(book, fakeBook));
+    }
+
+    @Test
     public void whenInitializeBookWithoutGenre_thenThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
             Book book = new Book(null, "Douglas Adams", "image.jpg",

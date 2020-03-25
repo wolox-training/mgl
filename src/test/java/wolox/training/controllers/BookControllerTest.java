@@ -63,16 +63,55 @@ public class BookControllerTest {
         Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
             "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
             "1979", 180, "0-330-25864-8");
+        Book fakeBook = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
+            "1979", 180, "0-330-25864-8");
 
-        List<Book> allBooks = Arrays.asList(book);
+        List<Book> allBooks = Arrays.asList(book, fakeBook);
 
-        given(repository.findAll()).willReturn(allBooks);
+        given(
+            repository.findByAllFields(null, null, null, null, null,
+                null, null, null, null, null))
+            .willReturn(allBooks);
 
         mvc.perform(get("/api/books")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].title", is("The Hitchhiker's Guide to the Galaxy")))
+            .andExpect(jsonPath("$[0].publisher", is("Pan Books")))
+            .andExpect(jsonPath("$[1].title", is("The Hitchhiker's Guide to the Galaxy")))
+            .andExpect(jsonPath("$[1].publisher", is("Fake Books")));
+    }
+
+    @WithMockUser("test")
+    @Test
+    public void givenBooks_whenGetSomeBooks_thenReturnJsonArray()
+        throws Exception {
+
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+
+        Book fakeBook = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
+            "1979", 180, "0-330-25864-8");
+
+        List<Book> allBooks = Arrays.asList(book, fakeBook);
+
+        given(repository.findByAllFields(null, null, null, null, null,
+            null, null, null, null, null)).willReturn(allBooks);
+
+        given(repository.findByAllFields(null, null, null, null, null,
+            null, "Pan Books", null, null, null)).willReturn(Arrays.asList(book));
+
+        mvc.perform(get("/api/books")
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("publisher", "Pan Books"))
+            .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].title", is("The Hitchhiker's Guide to the Galaxy")));
+            .andExpect(jsonPath("$[0].title", is("The Hitchhiker's Guide to the Galaxy")))
+            .andExpect(jsonPath("$[0].publisher", is("Pan Books")));
     }
 
     @WithMockUser("test")
@@ -81,7 +120,8 @@ public class BookControllerTest {
         throws Exception {
         List<Book> allBooks = new ArrayList<Book>();
 
-        given(repository.findAll()).willReturn(allBooks);
+        given(repository.findByAllFields(null, null, null, null, null,
+            null, null, null, null, null)).willReturn(allBooks);
 
         mvc.perform(get("/api/books")
             .contentType(MediaType.APPLICATION_JSON))
