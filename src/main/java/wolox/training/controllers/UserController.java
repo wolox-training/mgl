@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,12 +64,13 @@ public class UserController {
     /**
      * Find all {@link User}s.
      *
+     * @param pageable the parameters about pagination and sorting of the users
      * @return all the users that are persisted
      */
 
     @GetMapping
-    public Iterable findAll() {
-        return userRepository.findAll();
+    public Iterable findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     /**

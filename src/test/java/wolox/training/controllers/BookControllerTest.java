@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -67,21 +71,58 @@ public class BookControllerTest {
             "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
             "1979", 180, "0-330-25864-8");
 
-        List<Book> allBooks = Arrays.asList(book, fakeBook);
+        Page<Book> allBooks = new PageImpl<Book>(Arrays.asList(book, fakeBook));
 
         given(
             repository.findByAllFields(null, null, null, null, null,
-                null, null, null, null, null))
+                null, null, null, null, null, PageRequest.of(0, 2)))
             .willReturn(allBooks);
 
         mvc.perform(get("/api/books")
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("page", "0")
+            .param("size", "2"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].title", is("The Hitchhiker's Guide to the Galaxy")))
-            .andExpect(jsonPath("$[0].publisher", is("Pan Books")))
-            .andExpect(jsonPath("$[1].title", is("The Hitchhiker's Guide to the Galaxy")))
-            .andExpect(jsonPath("$[1].publisher", is("Fake Books")));
+            .andExpect(jsonPath("$.content", hasSize(2)))
+            .andExpect(jsonPath("$.content[0].title", is("The Hitchhiker's Guide to the Galaxy")))
+            .andExpect(jsonPath("$.content[0].publisher", is("Pan Books")))
+            .andExpect(jsonPath("$.content[1].title", is("The Hitchhiker's Guide to the Galaxy")))
+            .andExpect(jsonPath("$.content[1].publisher", is("Fake Books")));
+    }
+
+    @WithMockUser("test")
+    @Test
+    public void givenBooks_whenGetAllBooksPaged_thenReturnJsonArray()
+        throws Exception {
+
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0-330-25864-8");
+        Book fakeBook = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
+            "1979", 180, "0-330-25864-8");
+
+        Page<Book> allBooks = new PageImpl<Book>(Arrays.asList(book, fakeBook));
+
+        given(
+            repository.findByAllFields(null, null, null, null, null,
+                null, null, null, null, null, Pageable.unpaged()))
+            .willReturn(allBooks);
+
+        given(
+            repository.findByAllFields(null, null, null, null, null,
+                null, null, null, null, null, PageRequest.of(0, 1, Sort.by("publisher"))))
+            .willReturn(new PageImpl<Book>(Arrays.asList(fakeBook)));
+
+        mvc.perform(get("/api/books")
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("page", "0")
+            .param("size", "1")
+            .param("sort", "publisher,asc"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content", hasSize(1)))
+            .andExpect(jsonPath("$.content[0].title", is("The Hitchhiker's Guide to the Galaxy")))
+            .andExpect(jsonPath("$.content[0].publisher", is("Fake Books")));
     }
 
     @WithMockUser("test")
@@ -97,36 +138,42 @@ public class BookControllerTest {
             "The Hitchhiker's Guide to the Galaxy", "placeholder", "Fake Books",
             "1979", 180, "0-330-25864-8");
 
-        List<Book> allBooks = Arrays.asList(book, fakeBook);
+        Page<Book> allBooks = new PageImpl<Book>(Arrays.asList(book, fakeBook));
 
         given(repository.findByAllFields(null, null, null, null, null,
-            null, null, null, null, null)).willReturn(allBooks);
+            null, null, null, null, null, PageRequest.of(0, 2))).willReturn(allBooks);
 
         given(repository.findByAllFields(null, null, null, null, null,
-            null, "Pan Books", null, null, null)).willReturn(Arrays.asList(book));
+            null, "Pan Books", null, null, null, PageRequest.of(0, 2)))
+            .willReturn(new PageImpl<Book>(Arrays.asList(book)));
 
         mvc.perform(get("/api/books")
             .contentType(MediaType.APPLICATION_JSON)
-            .param("publisher", "Pan Books"))
+            .param("publisher", "Pan Books")
+            .param("page", "0")
+            .param("size", "2"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].title", is("The Hitchhiker's Guide to the Galaxy")))
-            .andExpect(jsonPath("$[0].publisher", is("Pan Books")));
+            .andExpect(jsonPath("$.content", hasSize(1)))
+            .andExpect(jsonPath("$.content[0].title", is("The Hitchhiker's Guide to the Galaxy")))
+            .andExpect(jsonPath("$.content[0].publisher", is("Pan Books")));
     }
 
     @WithMockUser("test")
     @Test
     public void givenNoBooks_whenGetAllBooks_thenReturnEmptyJsonArray()
         throws Exception {
-        List<Book> allBooks = new ArrayList<Book>();
+        Page<Book> allBooks = new PageImpl<Book>(new ArrayList<Book>());
 
         given(repository.findByAllFields(null, null, null, null, null,
-            null, null, null, null, null)).willReturn(allBooks);
+            null, null, null, null, null, PageRequest.of(0, 1)))
+            .willReturn(allBooks);
 
         mvc.perform(get("/api/books")
+            .param("page", "0")
+            .param("size", "1")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(0)));
+            .andExpect(jsonPath("$.content", hasSize(0)));
     }
 
     @WithMockUser("test")

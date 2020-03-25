@@ -5,13 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 import wolox.training.repositories.UserRepository;
 
@@ -47,11 +49,11 @@ public class UserTest {
         entityManager.persist(fakeUser);
         entityManager.flush();
 
-        List<User> found = userRepository
+        Page<User> found = userRepository
             .findByBirthDateBetweenAndNameIgnoreCase(LocalDate.of(1980, 1, 1),
-                LocalDate.of(1991, 1, 1), "marY lewiS");
+                LocalDate.of(1991, 1, 1), "marY lewiS", Pageable.unpaged());
 
-        assertThat(found).isEqualTo(Arrays.asList(user));
+        assertThat(found.get()).isEqualTo(Arrays.asList(user));
     }
 
     @Test
@@ -63,11 +65,11 @@ public class UserTest {
         entityManager.persist(fakeUser);
         entityManager.flush();
 
-        List<User> found = userRepository
+        Page<User> found = userRepository
             .findByBirthDateBetweenAndNameIgnoreCase(LocalDate.of(1980, 1, 1),
-                LocalDate.of(1991, 1, 1), null);
+                LocalDate.of(1991, 1, 1), null, Pageable.unpaged());
 
-        assertThat(found).isEqualTo(Arrays.asList(user));
+        assertThat(found.get()).isEqualTo(Arrays.asList(user));
     }
 
     @Test
@@ -79,11 +81,11 @@ public class UserTest {
         entityManager.persist(fakeUser);
         entityManager.flush();
 
-        List<User> found = userRepository
+        Page<User> found = userRepository
             .findByBirthDateBetweenAndNameIgnoreCase(LocalDate.of(1980, 1, 1),
-                null, null);
+                null, null, Pageable.unpaged());
 
-        assertThat(found).isEqualTo(Arrays.asList(user, fakeUser));
+        assertThat(found.get()).isEqualTo(Arrays.asList(user, fakeUser));
     }
 
     @Test
@@ -95,11 +97,11 @@ public class UserTest {
         entityManager.persist(fakeUser);
         entityManager.flush();
 
-        List<User> found = userRepository
+        Page<User> found = userRepository
             .findByBirthDateBetweenAndNameIgnoreCase(null,
-                LocalDate.of(1991, 1, 1), null);
+                LocalDate.of(1991, 1, 1), null, Pageable.unpaged());
 
-        assertThat(found).isEqualTo(Arrays.asList(user));
+        assertThat(found.get()).isEqualTo(Arrays.asList(user));
     }
 
     @Test
@@ -111,10 +113,26 @@ public class UserTest {
         entityManager.persist(fakeUser);
         entityManager.flush();
 
-        List<User> found = userRepository
-            .findByBirthDateBetweenAndNameIgnoreCase(null, null, "marY lewiS");
+        Page<User> found = userRepository
+            .findByBirthDateBetweenAndNameIgnoreCase(null, null, "marY lewiS", Pageable.unpaged());
 
-        assertThat(found).isEqualTo(Arrays.asList(user, fakeUser));
+        assertThat(found.get()).isEqualTo(Arrays.asList(user, fakeUser));
+    }
+
+    @Test
+    public void whenFindByNameIgnoreCasePaged_thenReturnUser() {
+        User user = new User("mary", "Mary Lewis", LocalDate.of(1990, 1, 1), "lewis");
+        User fakeUser = new User("mary", "Mary Lewis", LocalDate.of(1993, 1, 1), "lewis");
+
+        entityManager.persist(user);
+        entityManager.persist(fakeUser);
+        entityManager.flush();
+
+        Page<User> found = userRepository
+            .findByBirthDateBetweenAndNameIgnoreCase(null, null, "marY lewiS",
+                PageRequest.of(0, 1));
+
+        assertThat(found.get()).isEqualTo(Arrays.asList(user));
     }
 
     @Test

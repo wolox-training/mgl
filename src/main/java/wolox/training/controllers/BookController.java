@@ -1,6 +1,7 @@
 package wolox.training.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -64,6 +65,7 @@ public class BookController {
      * @param year      the year of the books
      * @param pages     the pages of the books
      * @param isbn      the isbn of the books
+     * @param pageable  the parameters about pagination and sorting of the books
      * @return all the books that are persisted and match the criteria
      */
 
@@ -76,10 +78,10 @@ public class BookController {
         @RequestParam(required = false) String publisher,
         @RequestParam(required = false) String year,
         @RequestParam(required = false) Integer pages,
-        @RequestParam(required = false) String isbn) {
+        @RequestParam(required = false) String isbn, Pageable pageable) {
         return bookRepository
             .findByAllFields(id, genre, author, image, title, subtitle, publisher, year, pages,
-                isbn);
+                isbn, pageable);
     }
 
     /**
