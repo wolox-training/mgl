@@ -3,6 +3,7 @@ package wolox.training.services;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,12 @@ public class OpenLibraryService {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Value("${openLibrary.baseUrl}")
+    private String baseUrl;
+
+    public OpenLibraryService() {
+    }
 
     public ResponseEntity<Book> search(String isbn) {
         Optional<Book> book = bookRepository.findByIsbn(isbn);
@@ -45,7 +52,7 @@ public class OpenLibraryService {
 
     public OpenLibraryBookDTO bookInfo(String isbn) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&format=json&jscmd=data";
+        String url = baseUrl + "/api/books?bibkeys=ISBN:{isbn}&format=json&jscmd=data";
 
         Map<String, OpenLibraryBookDTO> res = restTemplate.exchange(url, HttpMethod.GET, null,
             new ParameterizedTypeReference<Map<String, OpenLibraryBookDTO>>() {
