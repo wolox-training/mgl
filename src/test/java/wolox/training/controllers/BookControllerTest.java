@@ -66,7 +66,7 @@ public class BookControllerTest {
         Page<Book> allBooks = new PageImpl<Book>(Arrays.asList(book, fakeBook));
 
         given(
-            repository.findByAllFields(null, null, null, null, null,
+            repository.findByAllFields(null, "", null, null, null,
                 null, null, null, null, null, PageRequest.of(0, 2)))
             .willReturn(allBooks);
 
@@ -97,12 +97,12 @@ public class BookControllerTest {
         Page<Book> allBooks = new PageImpl<Book>(Arrays.asList(book, fakeBook));
 
         given(
-            repository.findByAllFields(null, null, null, null, null,
+            repository.findByAllFields(null, "", null, null, null,
                 null, null, null, null, null, Pageable.unpaged()))
             .willReturn(allBooks);
 
         given(
-            repository.findByAllFields(null, null, null, null, null,
+            repository.findByAllFields(null, "", null, null, null,
                 null, null, null, null, null, PageRequest.of(0, 1, Sort.by("publisher"))))
             .willReturn(new PageImpl<Book>(Arrays.asList(fakeBook)));
 
@@ -132,10 +132,10 @@ public class BookControllerTest {
 
         Page<Book> allBooks = new PageImpl<Book>(Arrays.asList(book, fakeBook));
 
-        given(repository.findByAllFields(null, null, null, null, null,
+        given(repository.findByAllFields(null, "", null, null, null,
             null, null, null, null, null, PageRequest.of(0, 2))).willReturn(allBooks);
 
-        given(repository.findByAllFields(null, null, null, null, null,
+        given(repository.findByAllFields(null, "", null, null, null,
             null, "Pan Books", null, null, null, PageRequest.of(0, 2)))
             .willReturn(new PageImpl<Book>(Arrays.asList(book)));
 
@@ -156,7 +156,7 @@ public class BookControllerTest {
         throws Exception {
         Page<Book> allBooks = new PageImpl<Book>(new ArrayList<Book>());
 
-        given(repository.findByAllFields(null, null, null, null, null,
+        given(repository.findByAllFields(null, "", null, null, null,
             null, null, null, null, null, PageRequest.of(0, 1)))
             .willReturn(allBooks);
 
