@@ -1,0 +1,24 @@
+{
+  "ISBN:0330258648": {
+    "publishers": [
+      {
+        "name": "Pan Books"
+      }
+    ],
+    "title": "The Hitchhiker's Guide to the Galaxy",
+    "subtitle": "placeholder",
+    "number_of_pages": 180,
+    "cover": {
+      "small": "image.jpg",
+      "large": "image.jpg",
+      "medium": "image.jpg"
+    },
+    "authors": [
+      {
+        "url": "https://openlibrary.org/authors/OL272947A/Douglas_Adams",
+        "name": "Douglas Adams"
+      }
+    ],
+    "publish_date": "1979"
+  }
+}

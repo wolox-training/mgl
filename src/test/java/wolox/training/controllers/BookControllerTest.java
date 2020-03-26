@@ -1,5 +1,7 @@
 package wolox.training.controllers;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
@@ -12,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -33,31 +37,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
-import wolox.training.repositories.UserRepository;
 import wolox.training.services.OpenLibraryService;
-import wolox.training.services.PasswordEncoderService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
-@ContextConfiguration(classes = {BookController.class})
+@ContextConfiguration(classes = {BookController.class, OpenLibraryService.class})
 @AutoConfigureMockMvc(addFilters = false)
 
 public class BookControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @MockBean
     private BookRepository repository;
-
-    @MockBean
-    private UserRepository userRepository;
-
-    @MockBean
-    private PasswordEncoderService passwordEncoderService;
-
-    @MockBean
-    private OpenLibraryService openLibraryService;
 
     @WithMockUser("test")
     @Test
@@ -302,5 +294,79 @@ public class BookControllerTest {
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
+    }
+
+
+    @WithMockUser("test")
+    @Test
+    public void givenIsbn_whenSearchForExistingBook_thenReturnOk()
+        throws Exception {
+
+        Book book = new Book("Science Fiction", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0330258648");
+
+        given(repository.findByIsbn(book.getIsbn())).willReturn(Optional.of(book));
+
+        mvc.perform(get("/api/books/search/" + book.getIsbn())
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.title", is("The Hitchhiker's Guide to the Galaxy")));
+    }
+
+
+    @WithMockUser("test")
+    @Test
+    public void givenIsbn_whenSearchForNonExistingBook_thenReturnCreated()
+        throws Exception {
+
+        Book book = new Book("no genre", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0330258648");
+
+        given(repository.save(book)).willReturn(book);
+
+        WireMockServer wireMockServer = new WireMockServer();
+        wireMockServer.givenThat(
+            WireMock.get(urlEqualTo("/api/books?bibkeys=ISBN:0330258648&format=json&jscmd=data"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBodyFile("response_ok_book.json")));
+
+        wireMockServer.start();
+
+        mvc.perform(get("/api/books/search/" + book.getIsbn())
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.title", is(book.getTitle())));
+
+        wireMockServer.stop();
+    }
+
+    @WithMockUser("test")
+    @Test
+    public void givenIsbn_whenSearchForNonExistingBookInvalid_thenReturnNotFound()
+        throws Exception {
+
+        Book book = new Book("no genre", "Douglas Adams", "image.jpg",
+            "The Hitchhiker's Guide to the Galaxy", "placeholder", "Pan Books",
+            "1979", 180, "0330258648");
+
+        WireMockServer wireMockServer = new WireMockServer();
+        wireMockServer.givenThat(
+            WireMock.get(urlEqualTo("/api/books?bibkeys=ISBN:0330258648&format=json&jscmd=data"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBodyFile("response_book_not_found.json")));
+
+        wireMockServer.start();
+
+        mvc.perform(get("/api/books/search/" + book.getIsbn())
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+
+        wireMockServer.stop();
     }
 }

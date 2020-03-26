@@ -38,6 +38,7 @@ dependencies {
     compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     compile group: 'org.springframework.security', name: 'spring-security-test'
+    testCompile "com.github.tomakehurst:wiremock-jre8:2.26.3"
 }
 
 test {
