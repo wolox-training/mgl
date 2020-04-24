@@ -39,8 +39,17 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     compile group: 'org.springframework.security', name: 'spring-security-test'
     testCompile "com.github.tomakehurst:wiremock-jre8:2.26.3"
+
+    compile 'org.codehaus.groovy:groovy-all:2.5.8'
+    compile 'org.codehaus.gmavenplus:gmavenplus-plugin:1.9.0'
+    testCompile platform('org.spockframework:spock-bom:2.0-M1-groovy-2.5')
+    testCompile 'org.spockframework:spock-core'
+    testCompile 'org.spockframework:spock-spring'
 }
 
 test {
     useJUnitPlatform()
 }
+
+apply plugin: 'groovy'
+ext['groovy.version'] = '2.5.8'
