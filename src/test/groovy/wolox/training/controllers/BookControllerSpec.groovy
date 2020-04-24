@@ -1,7 +1,6 @@
 package wolox.training.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.ObjectWriter
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -53,8 +52,8 @@ class BookControllerSpec extends Specification {
     }
 
     def "when editing a book with wrong is performed"() {
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter()
-        String json = ow.writeValueAsString(book)
+        def ow = new ObjectMapper().writer().withDefaultPrettyPrinter()
+        def json = ow.writeValueAsString(book)
 
         expect: "Status is 400"
         mvc.perform(put("/api/books/1")
